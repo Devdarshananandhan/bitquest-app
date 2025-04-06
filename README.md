@@ -1,4 +1,4 @@
-# myapp
+# BitQuest
 
 A new Flutter project.
 
