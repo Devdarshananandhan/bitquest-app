@@ -1,49 +1,56 @@
-import 'package:flame/game.dart';
-import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:flame/game.dart';
+import 'game/classroom_game.dart'; // Import your game class
 
 void main() {
-  runApp(GameWidget(game: ClassroomGame()));
+  runApp(const GameWithControls());
 }
 
-class ClassroomGame extends FlameGame {
-  static const int students = 70;
-  static const int columns = 5;
-  static const double tileSize = 32;
+class GameWithControls extends StatelessWidget {
+  const GameWithControls({super.key});
 
   @override
-  Future<void> onLoad() async {
-    super.onLoad();
+  Widget build(BuildContext context) {
+    final game = ClassroomGame();
 
-    const double spacing = 4;
-    // final rows = (students / columns).ceil();
-
-    for (int i = 0; i < students; i++) {
-      final row = i ~/ columns;
-      final col = i % columns;
-
-      final student = RectangleComponent(
-        size: Vector2(tileSize, tileSize),
-        position: Vector2(
-          col * (tileSize + spacing) + 20,
-          row * (tileSize + spacing) + 20,
+    return MaterialApp(
+      home: Scaffold(
+        body: Stack(
+          children: [
+            GameWidget(game: game),
+            Positioned(
+              bottom: 20,
+              left: 20,
+              child: Row(
+                children: [
+                  _controlButton("←", () => game.moveLeft()),
+                  const SizedBox(width: 10),
+                  _controlButton("→", () => game.moveRight()),
+                  const SizedBox(width: 10),
+                  _controlButton("↑", () => game.moveUp()),
+                  const SizedBox(width: 10),
+                  _controlButton("↓", () => game.moveDown()),
+                  const SizedBox(width: 10),
+                  _controlButton("⤴ Jump", () => game.jump()),
+                  const SizedBox(width: 10),
+                  _controlButton("Reset", () => game.resetStudents()),
+                ],
+              ),
+            ),
+          ],
         ),
-        paint: Paint()..color = Colors.greenAccent,
-      );
+      ),
+    );
+  }
 
-      final label = TextComponent(
-        text: '${i + 1}',
-        position: student.position + Vector2(5, 8),
-        textRenderer: TextPaint(
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 10,
-          ),
-        ),
-      );
-
-      add(student);
-      add(label);
-    }
+  Widget _controlButton(String label, VoidCallback onPressed) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.all(12),
+        backgroundColor: Colors.blue,
+      ),
+      onPressed: onPressed,
+      child: Text(label),
+    );
   }
 }
